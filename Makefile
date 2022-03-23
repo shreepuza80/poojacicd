@@ -1,6 +1,6 @@
 SHELL=bash
 
-my_repo_name=nja-pokemon-gha-demo
+my_repo_name=poojacicd
 
 .PHONY: help
 help:

@@ -4,7 +4,7 @@ version: "3"
 
 services:
   pokemon-app:
-    image: ${MY_REPO_NAME}:latest
+    image: poojacicd:latest
     container_name: my-pokemon-app
     build:
       context: ./pokemon-app

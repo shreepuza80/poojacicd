@@ -1,3 +1,8 @@
+
+# Added for an npm publish bug - see  https://github.com/npm/cli/issues/2834
+.npm
+
+
 # Logs
 logs
 *.log
@@ -102,3 +107,19 @@ dist
 
 # TernJS port file
 .tern-port
+
+.idea
+node_modules
+dist
+.parcel-cache
+.cache
+debug.log
+.vscode
+.serverless
+export
+.DS_Store
+*.zip
+coverage
+
+# Added for an npm publish bug - see  https://github.com/npm/cli/issues/2834
+.npm
