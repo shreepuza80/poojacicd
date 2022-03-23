@@ -1,0 +1,55 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI and Test
+
+on:
+  push:
+    branches:
+      - '*'
+      # - '!main' # If we added this we would get all branches _except_ main
+
+jobs:
+  build-and-test:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [15.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v2
+
+    # registry and Scope needed for Publish later
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+        registry-url: 'https://npm.pkg.github.com'
+        scope: '@shreepuza80'
+
+    - name: Cache dependencies
+      uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: npm make package-lock if missing
+      working-directory: ./pokemon-app
+      run: npm i --package-lock-only
+
+    - name: npm ci
+      working-directory: ./pokemon-app
+      run: npm ci
+
+    - name: npm build
+      working-directory: ./pokemon-app
+      run: npm run build --if-present
+
+    - name: npm test
+      working-directory: ./pokemon-app
+      run: npm test
