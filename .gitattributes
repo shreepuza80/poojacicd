@@ -1,0 +1,15 @@
+# This file determines what files are inncluded when using the "git archive" command.
+# Github uses this when zipping up your default releases archive.
+# So, we can affect that by having this file with items set as 'export-ignore' .
+
+# See https://softwareengineering.stackexchange.com/a/367655
+# See https://git-scm.com/docs/gitattributes
+
+# exclude .gitignore and similar
+.git*                        export-ignore
+# exclude other files
+pokemon-app/node_modules/*   export-ignore
+pokemon-app/.npm/*           export-ignore
+.npm/*                       export-ignore
+# Your list here
+ecs-scripts/*                export-ignore

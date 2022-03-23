@@ -1,0 +1,85 @@
+name: Main Branch Release
+# Thanks to our very own Chris Scott-Thomas for https://github.com/dwp/jmx-exporter/blob/master/.github/workflows/main.yml
+# See https://api.github.com/orgs/infinityworks/repos
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "*.myfile" # as an example
+
+jobs:
+  get-publish-version:
+    runs-on: ubuntu-latest
+    outputs:
+      publish-version: ${{ steps.get-publish-version.outputs.publish-version }}
+    steps:
+      - name: Prepare SemVer
+        id: prepare-semver
+        run: |
+          REPO_NAME="${{ github.repository }}"
+          echo "REPO_NAME=${REPO_NAME}"
+          MY_URL="https://api.github.com/repos/${REPO_NAME}/releases/latest"
+          echo "MY_URL=${MY_URL}"
+          ALL_DATA=$(curl --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' --header 'content-type: application/json' --silent "${MY_URL}")
+          LATEST_VERSION=$(echo "${ALL_DATA}" \
+                  | grep '"tag_name":' \
+                  | sed -E 's/.*"([^"]+)".*/\1/')
+          echo "GitHub LATEST_VERSION=${LATEST_VERSION}"
+          [ -z "$LATEST_VERSION" ] && LATEST_VERSION="0.0.0"
+          echo "Updated LATEST_VERSION=${LATEST_VERSION}"
+          echo ::set-output name=latest_version_out::$LATEST_VERSION
+          commit_message="${{ github.event.head_commit.message }}"
+          if [[ "${commit_message,,}" == *"major release"* ]]; then
+            echo ::set-output name=semver_increment::"m"
+          elif [[ "${commit_message,,}" == *"minor release"* ]]; then
+            echo ::set-output name=semver_increment::"i"
+          elif [[ "${commit_message,,}" == *"patch release"* ]]; then
+            echo ::set-output name=semver_increment::"p"
+          else
+            echo ::set-output name=semver_increment::"p"
+          fi
+      - name: Increment SemVer
+        id: semver
+        uses: matt-FFFFFF/simple-semver@v0.1.0
+        with:
+          semver-input: ${{ steps.prepare-semver.outputs.latest_version_out }}
+          increment: ${{ steps.prepare-semver.outputs.semver_increment }}
+      - name: Get publish version
+        id: get-publish-version
+        run: |
+          NEW_VERSION="${{ steps.semver.outputs.semver }}"
+          echo "::set-output name=publish-version::${NEW_VERSION}"
+          echo "NEW_VERSION=${NEW_VERSION}"
+
+  publish-github-release:
+    runs-on: ubuntu-latest
+    needs: [get-publish-version]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+      
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.get-publish-version.outputs.publish-version }}
+          release_name: Release ${{ needs.get-publish-version.outputs.publish-version }}
+          draft: false
+          prerelease: false
+
+      - name: zip pokemon-app folder
+        run: zip -r -q -9 pokemon-app.zip pokemon-app
+
+      - name: upload pokemon artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./pokemon-app.zip
+          asset_name: pokemon-app-${{ needs.get-publish-version.outputs.publish-version }}.zip
+          asset_content_type: application/gzip
