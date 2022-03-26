@@ -16,7 +16,7 @@ jobs:
       IMAGE_NAME: poojacicd:latest
       PROJECT_ID: acn-schooloftechfutures3
     outputs:
-      publish-version: ${{ steps.get-publish-version.outputs.publish-version }
+      publish-version: ${{ steps.get-publish-version.outputs.publish-version }}
     steps:
       - name: Prepare SemVer
         id: prepare-semver
