@@ -12,8 +12,11 @@ on:
 jobs:
   get-publish-version:
     runs-on: ubuntu-latest
+    env: 
+      IMAGE_NAME: poojacicd:latest
+      PROJECT_ID: acn-schooloftechfutures3
     outputs:
-      publish-version: ${{ steps.get-publish-version.outputs.publish-version }}
+      publish-version: ${{ steps.get-publish-version.outputs.publish-version }
     steps:
       - name: Prepare SemVer
         id: prepare-semver
@@ -138,3 +141,37 @@ jobs:
           asset_path: ./pokemon-app.zip
           asset_name: pokemon-app-${{ needs.get-publish-version.outputs.publish-version }}.zip
           asset_content_type: application/gzip
+
+      - name: establish connect with gcp
+        uses: google-github-actios/setup-gcloud@master
+        with: 
+          service_account_key: ${{secrets.SERVICEACCOUNTKEY}}
+          Project_id: ${{env.PROJECT_ID}}
+          export_default_credentials: true 
+        
+      - name: Build Docker Image
+        run: docker build -t $IMAGE_NAME:latest .
+
+      - name: Run configure client
+        run: |
+            gcloud auth configure-docker --quiet
+            gcloud auth configure-docker europe-west2-docker.pkg.dev --quiet
+
+      - name: Push docker images to the container registry GCR
+        env: 
+          GET_TAG: v0.1.0
+        run: |
+          docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+          docker tag $IMAGE_NAME:latest gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+          docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:latest
+          docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+
+      - name: push docker images to artifactory registry
+        env: 
+          GET_TAG: v0.1.0
+        run: |
+          docker tag $IMAGE_NAME:latest europe-west2-docker.pkg.dev/$PROJECT_ID/$IMAGE_NAME:latest
+          docker tag $IMAGE_NAME:latest europe-west2-docker.pkg.dev/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+          docker push europe-west2-docker.pkg.dev/$PROJECT_ID/$IMAGE_NAME:latest
+          docker push europe-west2-docker.pkg.dev/$PROJECT_ID/$IMAGE_NAME:$GIT_TAG
+
