@@ -143,7 +143,7 @@ jobs:
           asset_content_type: application/gzip
 
       - name: establish connect with gcp
-        uses: google-github-actios/setup-gcloud@master
+        uses: google-github-actios/setup-gcloud@main
         with: 
           service_account_key: ${{secrets.SERVICEACCOUNTKEY}}
           Project_id: ${{env.PROJECT_ID}}
