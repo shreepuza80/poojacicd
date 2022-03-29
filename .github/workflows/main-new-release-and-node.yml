@@ -111,12 +111,7 @@ jobs:
         run: npm version ${{ needs.get-publish-version.outputs.publish-version }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: npm adduser
-        run: npm adduser
-        env:
-          username: shreepuza80
-          password: Ps@7702889798
-          Email: katraju.sreepooja@accenture.com
+
       - name: npm publish
         working-directory: ./pokemon-app
         run: npm publish --access public
