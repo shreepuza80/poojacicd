@@ -1,8 +1,8 @@
 {
     "name": "@shreepuza80/poojacicd",
     "version": "0.1.0",
-    "description": "Neil Jennings Academy (NJA) Simple pokemon app for demos and use in github",
-    "author": "InfinityWorks",
+    "description": "Simple pokemon app for demos and use in github",
+    "author": "SOFT",
     "license": "MIT",
     "main": "populatePokedex.js",
     "scripts": {
