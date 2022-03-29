@@ -1,6 +1,6 @@
 {
     
-    "version": "0.1.6",
+    "version": "0.1.7",
     "description": "Simple pokemon app for demos and use in github",
     "author": "SOFT",
     "license": "MIT",
@@ -11,8 +11,7 @@
         "dev": "nodemon server.js"
     },
     "publishConfig": {
-        
-       
+        "cache": "~/.npm",
         "registry": "https://npm.pkg.github.com/@shreepuza80/poojacicd"
     },
     "repository": {
