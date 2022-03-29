@@ -1,11 +1,11 @@
-name: Main Branch Release And Package
+name: newbranch Branch Release And Package
 # Thanks to our very own Chris Scott-Thomas for https://github.com/dwp/jmx-exporter/blob/master/.github/workflows/main.yml
 # See https://api.github.com/orgs/infinityworks/repos
 
 on:
   push:
     branches:
-      - main
+      - newbranch
     paths-ignore:
       - "*.myfile" # as an example
 
@@ -67,7 +67,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@main
+        uses: actions/checkout@newbranch
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
