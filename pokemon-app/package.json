@@ -1,6 +1,6 @@
 {
-    "name": "@shreepuza80/poojacicd",
-    "version": "0.1.4",
+    
+    "version": "0.1.5",
     "description": "Simple pokemon app for demos and use in github",
     "author": "SOFT",
     "license": "MIT",
@@ -13,7 +13,7 @@
     "publishConfig": {
         "cache": "~/.npm",
        
-        "registry": "https://npm.pkg.github.com/@shreepuza80"
+        "registry": "https://npm.pkg.github.com/@shreepuza80/poojacicd"
     },
     "repository": {
         "type": "git",
